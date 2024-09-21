@@ -32,6 +32,7 @@ async function fetchInventory() {
         if (!inventoryData.success) {
             throw new Error('Failed to fetch inventory');
         }
+        else { alert('Inventory Fetch successful'); }
 
         const skinsResponse = await fetch("https://gateway.venge.io/?request=get_skins_list", {
             "headers": {
