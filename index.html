@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Venge.io Inventory Checker</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Venge.io Inventory Checker</h1>
+        <input type="text" id="username" placeholder="Enter your username">
+        <button onclick="fetchInventory()">Check Inventory</button>
+        <table id="skins-table">
+            <thead>
+                <tr>
+                    <th>Skin Name</th>
+                    <th>Owned</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
