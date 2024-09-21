@@ -10,16 +10,22 @@
     <div class="container">
         <h1>Venge.io Inventory Checker</h1>
         <input type="text" id="username" placeholder="Enter your username">
-        <button onclick="fetchInventory()">Check Inventory</button>
-        <table id="skins-table">
-            <thead>
-                <tr>
-                    <th>Skin Name</th>
-                    <th>Owned</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
+        <button onclick="checkInventory()">Check Inventory</button>
+        
+        <div id="result">
+            <h2>Inventory</h2>
+            <table id="inventoryTable">
+                <thead>
+                    <tr>
+                        <th>Skin Name</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Skins will be dynamically populated here -->
+                </tbody>
+            </table>
+        </div>
     </div>
     <script src="script.js"></script>
 </body>
