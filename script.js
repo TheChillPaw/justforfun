@@ -1,94 +1,57 @@
-async function fetchInventory() {
+async function checkInventory() {
     const username = document.getElementById('username').value;
     if (!username) {
-        alert('Please enter a username');
+        alert('Please enter a username.');
         return;
     }
 
+    const inventoryUrl = 'https://gateway.venge.io/?request=get_inventory_by_name';
+    const skinsUrl = 'https://gateway.venge.io/?request=get_skins_list';
+    
     try {
-        const inventoryResponse = await fetch("https://gateway.venge.io/?request=get_inventory_by_name", {
-            "headers": {
-              "accept": "*/*",
-              "accept-language": "en-US,en;q=0.9",
-              "content-type": "application/x-www-form-urlencoded",
-              "priority": "u=1, i",
-              "sec-ch-ua": "\"Chromium\";v=\"128\", \"Not;A=Brand\";v=\"24\", \"Google Chrome\";v=\"128\"",
-              "sec-ch-ua-mobile": "?0",
-              "sec-ch-ua-platform": "\"Windows\"",
-              "sec-fetch-dest": "empty",
-              "sec-fetch-mode": "cors",
-              "sec-fetch-site": "same-site"
+        // Fetch user's inventory
+        const inventoryResponse = await fetch(inventoryUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
             },
-            "referrer": "https://social.venge.io/",
-            "referrerPolicy": "strict-origin-when-cross-origin",
-            "body": `username=${username}&session=ZStTL0pHNVptcEU5cjMyQmJOU0FoOHJ1bEJrdGVGOVN2QnJlVkRzTTI0YUN5QWdCT3J3QWVVdTFNa1hRVDFKdDVoSEg1STlsNVdKTlpndGdpODkyS3NZeHRFa1MwNlA3d25WM21WcC9WWjQ9`,
-            "method": "POST",
-            "mode": "cors",
-            "credentials": "include"
-          });
-          
-
+            body: `username=${username}&session=ZStTL0pHNVptcEU5cjMyQmJOU0FoOHJ1bEJrdGVGOVN2QnJlVkRzTTI0YUN5QWdCT3J3QWVVdTFNa1hRVDFKdDVoSEg1STlsNVdKTlpndGdpODkyS3NZeHRFa1MwNlA3d25WM21WcC9WWjQ9`
+        });
         const inventoryData = await inventoryResponse.json();
-        if (!inventoryData.success) {
-            throw new Error('Failed to fetch inventory');
-        }
-        else { alert('Inventory Fetch successful'); }
+        const ownedSkins = inventoryData.result.map(item => item.id);
 
-        const skinsResponse = await fetch("https://gateway.venge.io/?request=get_skins_list", {
-            "headers": {
-              "accept": "*/*",
-              "accept-language": "en-US,en;q=0.9",
-              "content-type": "application/x-www-form-urlencoded",
-              "priority": "u=1, i",
-              "sec-ch-ua": "\"Chromium\";v=\"128\", \"Not;A=Brand\";v=\"24\", \"Google Chrome\";v=\"128\"",
-              "sec-ch-ua-mobile": "?0",
-              "sec-ch-ua-platform": "\"Windows\"",
-              "sec-fetch-dest": "empty",
-              "sec-fetch-mode": "cors",
-              "sec-fetch-site": "same-site"
+        // Fetch all skins
+        const skinsResponse = await fetch(skinsUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
             },
-            "referrer": "https://social.venge.io/",
-            "referrerPolicy": "strict-origin-when-cross-origin",
-            "body": "session=ZStTL0pHNVptcEU5cjMyQmJOU0FoOHJ1bEJrdGVGOVN2QnJlVkRzTTI0YUN5QWdCT3J3QWVVdTFNa1hRVDFKdDVoSEg1STlsNVdKTlpndGdpODkyS3NZeHRFa1MwNlA3d25WM21WcC9WWjQ9",
-            "method": "POST",
-            "mode": "cors",
-            "credentials": "include"
-          });
-          
-
+            body: `session=ZStTL0pHNVptcEU5cjMyQmJOU0FoOHJ1bEJrdGVGOVN2QnJlVkRzTTI0YUN5QWdCT3J3QWVVdTFNa1hRVDFKdDVoSEg1STlsNVdKTlpndGdpODkyS3NZeHRFa1MwNlA3d25WM21WcC9WWjQ9`
+        });
         const skinsData = await skinsResponse.json();
-        if (!skinsData.success) {
-            throw new Error('Failed to fetch skins list');
-        }
 
-        updateSkinsTable(inventoryData.result, skinsData.result);
+        // Display results
+        displayInventory(skinsData.result, ownedSkins);
+        
     } catch (error) {
-        console.error(error);
-        alert('Error fetching data');
+        console.error('Error fetching data:', error);
     }
 }
 
-function updateSkinsTable(inventory, skins) {
-    const tableBody = document.querySelector('#skins-table tbody');
-    tableBody.innerHTML = '';
-
-    const inventoryIds = inventory.map(item => item.id);
+function displayInventory(skins, ownedSkins) {
+    const tableBody = document.querySelector('#inventoryTable tbody');
+    tableBody.innerHTML = '';  // Clear previous results
 
     skins.forEach(skin => {
-        const row = document.createElement('tr');
+        const isOwned = ownedSkins.includes(skin.id);
+        const status = isOwned ? '<span class="check">&#10004;</span>' : '<span class="cross">&#10008;</span>';
 
-        const nameCell = document.createElement('td');
-        nameCell.textContent = skin.name;
-        row.appendChild(nameCell);
-
-        const ownedCell = document.createElement('td');
-        if (inventoryIds.includes(skin.id)) {
-            ownedCell.textContent = '✔';
-        } else {
-            ownedCell.textContent = '✖';
-        }
-        row.appendChild(ownedCell);
-
-        tableBody.appendChild(row);
+        const row = `
+            <tr>
+                <td>${skin.name}</td>
+                <td class="status">${status}</td>
+            </tr>
+        `;
+        tableBody.innerHTML += row;
     });
 }
