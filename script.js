@@ -42,6 +42,42 @@ function displayInventory(skins, ownedSkins) {
     const tableBody = document.querySelector('#inventoryTable tbody');
     tableBody.innerHTML = '';  // Clear previous results
 
+    // Calculate statistics
+    const totalSkins = skins.length;
+    const ownedCount = ownedSkins.length;
+
+    // Calculate stats by rarity
+    const rarityStats = {};
+    skins.forEach(skin => {
+        const rarity = skin.rarity.toLowerCase();
+        if (!rarityStats[rarity]) {
+            rarityStats[rarity] = { total: 0, owned: 0 };
+        }
+        rarityStats[rarity].total++;
+        if (ownedSkins.includes(skin.id)) {
+            rarityStats[rarity].owned++;
+        }
+    });
+
+    // Update total stats
+    document.getElementById('totalSkins').textContent = totalSkins;
+    document.getElementById('ownedSkins').textContent = ownedCount;
+
+    // Update rarity stats
+    const rarityStatsContainer = document.getElementById('rarityStats');
+    rarityStatsContainer.innerHTML = '';
+
+    Object.keys(rarityStats).sort().forEach(rarity => {
+        const stats = rarityStats[rarity];
+        const statItem = document.createElement('div');
+        statItem.className = 'rarity-stat-item';
+        statItem.innerHTML = `
+            <span class="rarity-label rarity-${rarity}">${rarity.charAt(0).toUpperCase() + rarity.slice(1)}:</span>
+            <span class="rarity-values">${stats.owned} / ${stats.total}</span>
+        `;
+        rarityStatsContainer.appendChild(statItem);
+    });
+
     skins.forEach(skin => {
         const isOwned = ownedSkins.includes(skin.id);
         const status = isOwned ? '<span class="check">&#10004;</span>' : '<span class="cross">&#10008;</span>';
