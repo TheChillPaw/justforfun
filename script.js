@@ -5,6 +5,9 @@ async function checkInventory() {
         return;
     }
 
+    const inventoryTitle = document.getElementById('inventoryTitle');
+    inventoryTitle.textContent = `${username}'s inventory`;
+
     const inventoryUrl = 'https://gateway.venge.io/?request=get_inventory_by_name';
     const skinsUrl = 'https://gateway.venge.io/?request=get_skins_list';
     
@@ -94,3 +97,37 @@ function displayInventory(skins, ownedSkins) {
         tableBody.innerHTML += row;
     });
 }
+
+// Theme Toggle Logic
+const themeToggle = document.getElementById('themeToggle');
+const sunIcon = document.getElementById('sunIcon');
+const moonIcon = document.getElementById('moonIcon');
+
+function setTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+    if (theme === 'dark') {
+        sunIcon.style.display = 'block';
+        moonIcon.style.display = 'none';
+    } else {
+        sunIcon.style.display = 'none';
+        moonIcon.style.display = 'block';
+    }
+}
+
+// Check for saved theme preference or browser preference
+const savedTheme = localStorage.getItem('theme');
+const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+if (savedTheme) {
+    setTheme(savedTheme);
+} else if (prefersDark) {
+    setTheme('dark');
+} else {
+    setTheme('light');
+}
+
+themeToggle.addEventListener('click', () => {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    setTheme(currentTheme === 'dark' ? 'light' : 'dark');
+});

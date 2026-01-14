@@ -1,23 +1,60 @@
+:root {
+    --bg-color: #f0f2f5;
+    --container-bg: #fff;
+    --text-color: #333;
+    --heading-color: #1a1a1a;
+    --input-border: #ddd;
+    --button-bg: #28a745;
+    --button-hover: #218838;
+    --stats-bg: #f8f9fa;
+    --stat-label: #666;
+    --border-color: #eee;
+    --table-header-bg: #f8f9fa;
+    --table-header-text: #555;
+    --table-row-even: #fafafa;
+    --table-row-hover: #f1f3f5;
+    --rarity-item-bg: #fff;
+}
+
+[data-theme="dark"] {
+    --bg-color: #18191a;
+    --container-bg: #242526;
+    --text-color: #e4e6eb;
+    --heading-color: #f5f6f7;
+    --input-border: #3a3b3c;
+    --stats-bg: #3a3b3c;
+    --stat-label: #b0b3b8;
+    --border-color: #3e4042;
+    --table-header-bg: #3a3b3c;
+    --table-header-text: #e4e6eb;
+    --table-row-even: #2f3031;
+    --table-row-hover: #3e4042;
+    --rarity-item-bg: #3a3b3c;
+}
+
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f0f2f5;
+    background-color: var(--bg-color);
     margin: 0;
     padding: 0;
-    color: #333;
+    color: var(--text-color);
+    transition: background-color 0.3s, color 0.3s;
 }
 
 .container {
     max-width: 900px;
     margin: 40px auto;
     padding: 30px;
-    background-color: #fff;
+    background-color: var(--container-bg);
     border-radius: 12px;
     box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.12);
+    position: relative;
+    transition: background-color 0.3s;
 }
 
 h1 {
     text-align: center;
-    color: #1a1a1a;
+    color: var(--heading-color);
     margin-bottom: 30px;
 }
 
@@ -30,20 +67,22 @@ h1 {
 input[type="text"] {
     flex-grow: 1;
     padding: 12px 16px;
-    border: 2px solid #ddd;
+    border: 2px solid var(--input-border);
     border-radius: 6px;
     font-size: 16px;
-    transition: border-color 0.3s;
+    background-color: var(--container-bg);
+    color: var(--text-color);
+    transition: border-color 0.3s, background-color 0.3s, color 0.3s;
 }
 
 input[type="text"]:focus {
     outline: none;
-    border-color: #28a745;
+    border-color: var(--button-bg);
 }
 
 button {
     padding: 12px 24px;
-    background-color: #28a745;
+    background-color: var(--button-bg);
     color: white;
     border: none;
     border-radius: 6px;
@@ -54,11 +93,33 @@ button {
 }
 
 button:hover {
-    background-color: #218838;
+    background-color: var(--button-hover);
 }
 
 button:active {
     transform: translateY(1px);
+}
+
+.theme-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: var(--container-bg);
+    border: 1px solid var(--border-color);
+    padding: 10px;
+    color: var(--text-color);
+    cursor: pointer;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    z-index: 1000;
+}
+
+.theme-toggle:hover {
+    background-color: var(--table-row-hover);
 }
 
 #result {
@@ -66,9 +127,10 @@ button:active {
 }
 
 h2 {
-    border-bottom: 2px solid #eee;
+    border-bottom: 2px solid var(--border-color);
     padding-bottom: 10px;
     margin-bottom: 20px;
+    color: var(--heading-color);
 }
 
 .stats-container {
@@ -76,9 +138,10 @@ h2 {
     gap: 30px;
     margin-bottom: 20px;
     padding: 15px;
-    background-color: #f8f9fa;
+    background-color: var(--stats-bg);
     border-radius: 8px;
-    border-left: 4px solid #28a745;
+    border-left: 4px solid var(--button-bg);
+    transition: background-color 0.3s;
 }
 
 .stat-item {
@@ -90,7 +153,7 @@ h2 {
 
 .stat-label {
     font-size: 14px;
-    color: #666;
+    color: var(--stat-label);
     margin-bottom: 5px;
     font-weight: 500;
 }
@@ -98,7 +161,7 @@ h2 {
 .stat-value {
     font-size: 28px;
     font-weight: 700;
-    color: #28a745;
+    color: var(--button-bg);
 }
 
 .rarity-stats-container {
@@ -107,8 +170,9 @@ h2 {
     gap: 15px;
     margin-bottom: 20px;
     padding: 15px;
-    background-color: #f8f9fa;
+    background-color: var(--stats-bg);
     border-radius: 8px;
+    transition: background-color 0.3s;
 }
 
 .rarity-stat-item {
@@ -116,9 +180,10 @@ h2 {
     align-items: center;
     gap: 10px;
     padding: 8px 12px;
-    background-color: #fff;
+    background-color: var(--rarity-item-bg);
     border-radius: 6px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s;
 }
 
 .rarity-label {
@@ -129,7 +194,7 @@ h2 {
 .rarity-values {
     font-weight: 700;
     font-size: 14px;
-    color: #333;
+    color: var(--text-color);
 }
 
 table {
@@ -140,21 +205,23 @@ table {
 }
 
 th {
-    background-color: #f8f9fa;
-    color: #555;
+    background-color: var(--table-header-bg);
+    color: var(--table-header-text);
     font-weight: 600;
     text-transform: uppercase;
     font-size: 13px;
     letter-spacing: 0.5px;
     padding: 15px 12px;
-    border-bottom: 2px solid #dee2e6;
+    border-bottom: 2px solid var(--border-color);
     text-align: left;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
 }
 
 td {
     padding: 12px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--border-color);
     font-size: 15px;
+    transition: background-color 0.3s, border-color 0.3s;
 }
 
 tr:last-child td {
@@ -162,11 +229,11 @@ tr:last-child td {
 }
 
 tr:nth-child(even) {
-    background-color: #fafafa;
+    background-color: var(--table-row-even);
 }
 
 tr:hover {
-    background-color: #f1f3f5;
+    background-color: var(--table-row-hover);
 }
 
 tr.owned {
@@ -205,9 +272,19 @@ td.status {
     color: #495057;
 }
 
+[data-theme="dark"] .rarity-common {
+    background-color: #495057;
+    color: #e9ecef;
+}
+
 .rarity-uncommon {
     background-color: #d4edda;
     color: #155724;
+}
+
+[data-theme="dark"] .rarity-uncommon {
+    background-color: #155724;
+    color: #d4edda;
 }
 
 .rarity-rare {
@@ -215,12 +292,28 @@ td.status {
     color: #004085;
 }
 
+[data-theme="dark"] .rarity-rare {
+    background-color: #004085;
+    color: #cce5ff;
+}
+
 .rarity-legendary {
     background-color: #fff3cd;
     color: #856404;
+}
+
+[data-theme="dark"] .rarity-legendary {
+    background-color: #856404;
+    color: #fff3cd;
 }
 
 .rarity-mythical {
     background-color: #f8d7da;
     color: #721c24;
 }
+
+[data-theme="dark"] .rarity-mythical {
+    background-color: #721c24;
+    color: #f8d7da;
+}
+
