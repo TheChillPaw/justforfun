@@ -1,1 +1,1 @@
-venge inventory checker
+just a checker
