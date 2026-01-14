@@ -15,7 +15,7 @@ async function checkInventory() {
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
-            body: `username=${username}&session=ZStTL0pHNVptcEU5cjMyQmJOU0FoOHJ1bEJrdGVGOVN2QnJlVkRzTTI0YUN5QWdCT3J3QWVVdTFNa1hRVDFKdDVoSEg1STlsNVdKTlpndGdpODkyS3NZeHRFa1MwNlA3d25WM21WcC9WWjQ9`
+            body: `username=${username}&session=ak1mTllrZ0UwTUFhU241ZEs4ajdpdlhzSTNGVmhqRjdYREJzTWMzUHJuWlJHaTdMMWx3MEloOGZVRXIrak50dUJkeWR4VHhUK0JrVks3NTBUU3o0RGRsaDh6K21qK0NYaUlHejlZSUhzYzR5R3ArYlAxelR0Y3MvbFFSYWpvTFI=`
         });
         const inventoryData = await inventoryResponse.json();
         const ownedSkins = inventoryData.result.map(item => item.id);
@@ -55,3 +55,4 @@ function displayInventory(skins, ownedSkins) {
         tableBody.innerHTML += row;
     });
 }
+
