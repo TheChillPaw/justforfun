@@ -9,8 +9,10 @@
 <body>
     <div class="container">
         <h1>Venge.io Inventory Checker</h1>
-        <input type="text" id="username" placeholder="Enter your username">
-        <button onclick="checkInventory()">Check Inventory</button>
+        <div class="input-group">
+            <input type="text" id="username" placeholder="Enter your username">
+            <button onclick="checkInventory()">Check Inventory</button>
+        </div>
         
         <div id="result">
             <h2>Inventory</h2>
@@ -18,6 +20,8 @@
                 <thead>
                     <tr>
                         <th>Skin Name</th>
+                        <th>Type</th>
+                        <th>Rarity</th>
                         <th>Status</th>
                     </tr>
                 </thead>

@@ -45,14 +45,16 @@ function displayInventory(skins, ownedSkins) {
     skins.forEach(skin => {
         const isOwned = ownedSkins.includes(skin.id);
         const status = isOwned ? '<span class="check">&#10004;</span>' : '<span class="cross">&#10008;</span>';
+        const rowClass = isOwned ? 'owned' : 'missing';
 
         const row = `
-            <tr>
+            <tr class="${rowClass}">
                 <td>${skin.name}</td>
+                <td>${skin.type}</td>
+                <td><span class="rarity-${skin.rarity.toLowerCase()}">${skin.rarity}</span></td>
                 <td class="status">${status}</td>
             </tr>
         `;
         tableBody.innerHTML += row;
     });
 }
-
