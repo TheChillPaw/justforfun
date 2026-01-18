@@ -5,12 +5,15 @@ async function checkInventory() {
         return;
     }
 
+    const loadingPopup = document.getElementById('loadingPopup');
+    loadingPopup.style.display = 'flex';
+
     const inventoryTitle = document.getElementById('inventoryTitle');
     inventoryTitle.textContent = `${username}'s inventory`;
 
     const inventoryUrl = 'https://gateway.venge.io/?request=get_inventory_by_name';
     const skinsUrl = 'https://gateway.venge.io/?request=get_skins_list';
-    
+
     try {
         // Fetch user's inventory
         const inventoryResponse = await fetch(inventoryUrl, {
@@ -35,9 +38,11 @@ async function checkInventory() {
 
         // Display results
         displayInventory(skinsData.result, ownedSkins);
-        
+
     } catch (error) {
         console.error('Error fetching data:', error);
+    } finally {
+        loadingPopup.style.display = 'none';
     }
 }
 
