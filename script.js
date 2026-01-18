@@ -24,6 +24,19 @@ async function checkInventory() {
             body: `username=${username}&session=ak1mTllrZ0UwTUFhU241ZEs4ajdpdlhzSTNGVmhqRjdYREJzTWMzUHJuWlJHaTdMMWx3MEloOGZVRXIrak50dUJkeWR4VHhUK0JrVks3NTBUU3o0RGRsaDh6K21qK0NYaUlHejlZSUhzYzR5R3ArYlAxelR0Y3MvbFFSYWpvTFI=`
         });
         const inventoryData = await inventoryResponse.json();
+
+        // Check if the API returned an error
+        if (inventoryData.success === false) {
+            if (inventoryData.message === "Receiver username is not found!") {
+                alert(`Username "${username}" not found. Please check the spelling and try again.`);
+            } else if (inventoryData.message === "Receiver has no items!") {
+                alert(`User "${username}" has no items in their inventory.`);
+            } else {
+                alert(`Error: ${inventoryData.message}`);
+            }
+            return;
+        }
+
         const ownedSkins = inventoryData.result.map(item => item.id);
 
         // Fetch all skins
@@ -41,6 +54,7 @@ async function checkInventory() {
 
     } catch (error) {
         console.error('Error fetching data:', error);
+        alert('An error occurred while fetching inventory data. Please try again.');
     } finally {
         loadingPopup.style.display = 'none';
     }
