@@ -137,15 +137,23 @@ async function checkInventory() {
             rarity: 'None'
         };
         
-        // Only add Verification Charm if it's not already in the skins list
-        const hasVerificationCharm = allSkins.some(skin => skin.id === verificationCharmId);
-        if (!hasVerificationCharm) {
+        // Check if Verification Charm exists in the skins list (by ID or name)
+        const existingVerificationCharm = allSkins.find(skin => 
+            skin.id === verificationCharmId || 
+            (skin.name && skin.name.toLowerCase() === 'verification charm')
+        );
+        
+        // If it doesn't exist, add it manually
+        if (!existingVerificationCharm) {
             allSkins.push(verificationCharm);
         }
         
+        // Determine the actual ID to use for ownership (prefer the one from API if it exists)
+        const actualVerificationCharmId = existingVerificationCharm ? existingVerificationCharm.id : verificationCharmId;
+        
         allOwnedSkins = [...ownedSkins];
-        if (isVerified) {
-            allOwnedSkins.push(verificationCharmId);
+        if (isVerified && !allOwnedSkins.includes(actualVerificationCharmId)) {
+            allOwnedSkins.push(actualVerificationCharmId);
         }
         
         currentFilter = 'all';
