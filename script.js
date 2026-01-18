@@ -1,3 +1,7 @@
+let allSkins = [];
+let allOwnedSkins = [];
+let currentFilter = 'all';
+
 function showLoadingPopup(message = 'Loading inventory...', isError = false) {
     const loadingPopup = document.getElementById('loadingPopup');
     const loadingContent = loadingPopup.querySelector('.loading-content');
@@ -38,6 +42,10 @@ function clearInventory() {
 
     const rarityStatsContainer = document.getElementById('rarityStats');
     rarityStatsContainer.innerHTML = '';
+
+    allSkins = [];
+    allOwnedSkins = [];
+    currentFilter = 'all';
 }
 
 async function checkInventory() {
@@ -102,13 +110,17 @@ async function checkInventory() {
         }
 
         const skinsData = await skinsResponse.json();
-
+        
         if (!skinsData || skinsData.success === false || !Array.isArray(skinsData.result)) {
             showLoadingPopup('Failed to load skins list. Please try again.', true);
             return;
         }
 
-        displayInventory(skinsData.result, ownedSkins);
+        allSkins = skinsData.result;
+        allOwnedSkins = ownedSkins;
+        currentFilter = 'all';
+
+        displayInventory(allSkins, allOwnedSkins);
         hideLoadingPopup();
 
     } catch (error) {
@@ -122,7 +134,7 @@ function displayInventory(skins, ownedSkins) {
     tableBody.innerHTML = '';  // Clear previous results
 
     // Calculate statistics
-    const totalSkins = skins.length;
+    const totalSkinsCount = skins.length;
     const ownedCount = ownedSkins.length;
 
     // Calculate stats by rarity
@@ -139,39 +151,62 @@ function displayInventory(skins, ownedSkins) {
     });
 
     // Update total stats
-    document.getElementById('totalSkins').textContent = totalSkins;
+    document.getElementById('totalSkins').textContent = totalSkinsCount;
     document.getElementById('ownedSkins').textContent = ownedCount;
 
     // Update rarity stats
     const rarityStatsContainer = document.getElementById('rarityStats');
     rarityStatsContainer.innerHTML = '';
 
+    // Add "All" filter option
+    const allStatItem = document.createElement('div');
+    allStatItem.className = `rarity-stat-item ${currentFilter === 'all' ? 'active' : ''}`;
+    allStatItem.innerHTML = `
+        <span class="rarity-label rarity-all">All:</span>
+        <span class="rarity-values">${ownedCount} / ${totalSkinsCount}</span>
+    `;
+    allStatItem.onclick = () => {
+        currentFilter = 'all';
+        displayInventory(allSkins, allOwnedSkins);
+    };
+    rarityStatsContainer.appendChild(allStatItem);
+
     Object.keys(rarityStats).sort().forEach(rarity => {
         const stats = rarityStats[rarity];
         const statItem = document.createElement('div');
-        statItem.className = 'rarity-stat-item';
+        statItem.className = `rarity-stat-item ${currentFilter === rarity ? 'active' : ''}`;
         statItem.innerHTML = `
             <span class="rarity-label rarity-${rarity}">${rarity.charAt(0).toUpperCase() + rarity.slice(1)}:</span>
             <span class="rarity-values">${stats.owned} / ${stats.total}</span>
         `;
+        statItem.onclick = () => {
+            currentFilter = currentFilter === rarity ? 'all' : rarity;
+            displayInventory(allSkins, allOwnedSkins);
+        };
         rarityStatsContainer.appendChild(statItem);
     });
 
+    let tableHTML = '';
     skins.forEach(skin => {
+        const rarity = skin.rarity.toLowerCase();
+        if (currentFilter !== 'all' && rarity !== currentFilter) {
+            return;
+        }
+
         const isOwned = ownedSkins.includes(skin.id);
         const status = isOwned ? '<span class="check">&#10004;</span>' : '<span class="cross">&#10008;</span>';
         const rowClass = isOwned ? 'owned' : 'missing';
 
-        const row = `
+        tableHTML += `
             <tr class="${rowClass}">
                 <td>${skin.name}</td>
                 <td>${skin.type}</td>
-                <td><span class="rarity-${skin.rarity.toLowerCase()}">${skin.rarity}</span></td>
+                <td><span class="rarity-${rarity}">${skin.rarity}</span></td>
                 <td class="status">${status}</td>
             </tr>
         `;
-        tableBody.innerHTML += row;
     });
+    tableBody.innerHTML = tableHTML;
 }
 
 // Theme Toggle Logic
