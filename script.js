@@ -66,6 +66,7 @@ async function checkInventory() {
 
     const inventoryUrl = 'https://gateway.venge.io/?request=get_inventory_by_name';
     const skinsUrl = 'https://gateway.venge.io/?request=get_skins_list';
+    const profileUrl = `https://gateway.venge.io/?request=get_profile_details_v2&username=${encodeURIComponent(username)}`;
 
     try {
         const inventoryResponse = await fetch(inventoryUrl, {
@@ -116,8 +117,33 @@ async function checkInventory() {
             return;
         }
 
-        allSkins = skinsData.result;
-        allOwnedSkins = ownedSkins;
+        const profileResponse = await fetch(profileUrl);
+        let isVerified = false;
+
+        if (profileResponse.ok) {
+            const profileData = await profileResponse.json();
+            if (profileData.success && profileData.verified === "1") {
+                isVerified = true;
+            }
+        }
+
+        allSkins = [...skinsData.result];
+        
+        const verificationCharmId = 'verification_charm';
+        const verificationCharm = {
+            id: verificationCharmId,
+            name: 'Verification Charm',
+            type: 'Charm',
+            rarity: 'None'
+        };
+        
+        allSkins.push(verificationCharm);
+        
+        allOwnedSkins = [...ownedSkins];
+        if (isVerified) {
+            allOwnedSkins.push(verificationCharmId);
+        }
+        
         currentFilter = 'all';
 
         displayInventory(allSkins, allOwnedSkins);
