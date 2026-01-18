@@ -137,7 +137,11 @@ async function checkInventory() {
             rarity: 'None'
         };
         
-        allSkins.push(verificationCharm);
+        // Only add Verification Charm if it's not already in the skins list
+        const hasVerificationCharm = allSkins.some(skin => skin.id === verificationCharmId);
+        if (!hasVerificationCharm) {
+            allSkins.push(verificationCharm);
+        }
         
         allOwnedSkins = [...ownedSkins];
         if (isVerified) {
