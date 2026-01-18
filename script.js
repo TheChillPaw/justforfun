@@ -1,45 +1,93 @@
+function showLoadingPopup(message = 'Loading inventory...', isError = false) {
+    const loadingPopup = document.getElementById('loadingPopup');
+    const loadingContent = loadingPopup.querySelector('.loading-content');
+    const loadingMessage = document.getElementById('loadingMessage');
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    const loadingCloseButton = document.getElementById('loadingCloseButton');
+
+    loadingMessage.textContent = message;
+
+    if (isError) {
+        loadingContent.classList.add('error');
+        loadingSpinner.style.display = 'none';
+        loadingCloseButton.style.display = 'inline-block';
+        loadingPopup.dataset.closable = 'true';
+    } else {
+        loadingContent.classList.remove('error');
+        loadingSpinner.style.display = 'block';
+        loadingCloseButton.style.display = 'none';
+        loadingPopup.dataset.closable = 'false';
+    }
+
+    loadingPopup.style.display = 'flex';
+    loadingPopup.setAttribute('aria-hidden', 'false');
+}
+
+function hideLoadingPopup() {
+    const loadingPopup = document.getElementById('loadingPopup');
+    loadingPopup.style.display = 'none';
+    loadingPopup.setAttribute('aria-hidden', 'true');
+}
+
+function clearInventory() {
+    const tableBody = document.querySelector('#inventoryTable tbody');
+    tableBody.innerHTML = '';
+
+    document.getElementById('totalSkins').textContent = '0';
+    document.getElementById('ownedSkins').textContent = '0';
+
+    const rarityStatsContainer = document.getElementById('rarityStats');
+    rarityStatsContainer.innerHTML = '';
+}
+
 async function checkInventory() {
-    const username = document.getElementById('username').value;
+    clearInventory();
+
+    const rawUsername = document.getElementById('username').value;
+    const username = rawUsername.trim();
+
+    const inventoryTitle = document.getElementById('inventoryTitle');
+    inventoryTitle.textContent = username ? `${username}'s inventory` : 'Inventory';
+
     if (!username) {
-        alert('Please enter a username.');
+        showLoadingPopup('Please enter a username.', true);
         return;
     }
 
-    const loadingPopup = document.getElementById('loadingPopup');
-    loadingPopup.style.display = 'flex';
-
-    const inventoryTitle = document.getElementById('inventoryTitle');
-    inventoryTitle.textContent = `${username}'s inventory`;
+    showLoadingPopup('Loading inventory...');
 
     const inventoryUrl = 'https://gateway.venge.io/?request=get_inventory_by_name';
     const skinsUrl = 'https://gateway.venge.io/?request=get_skins_list';
 
     try {
-        // Fetch user's inventory
         const inventoryResponse = await fetch(inventoryUrl, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
-            body: `username=${username}&session=ak1mTllrZ0UwTUFhU241ZEs4ajdpdlhzSTNGVmhqRjdYREJzTWMzUHJuWlJHaTdMMWx3MEloOGZVRXIrak50dUJkeWR4VHhUK0JrVks3NTBUU3o0RGRsaDh6K21qK0NYaUlHejlZSUhzYzR5R3ArYlAxelR0Y3MvbFFSYWpvTFI=`
+            body: `username=${encodeURIComponent(username)}&session=ak1mTllrZ0UwTUFhU241ZEs4ajdpdlhzSTNGVmhqRjdYREJzTWMzUHJuWlJHaTdMMWx3MEloOGZVRXIrak50dUJkeWR4VHhUK0JrVks3NTBUU3o0RGRsaDh6K21qK0NYaUlHejlZSUhzYzR5R3ArYlAxelR0Y3MvbFFSYWpvTFI=`
         });
+
+        if (!inventoryResponse.ok) {
+            showLoadingPopup('Failed to load inventory. Please try again.', true);
+            return;
+        }
+
         const inventoryData = await inventoryResponse.json();
 
-        // Check if the API returned an error
         if (inventoryData.success === false) {
-            if (inventoryData.message === "Receiver username is not found!") {
-                alert(`Username "${username}" not found. Please check the spelling and try again.`);
-            } else if (inventoryData.message === "Receiver has no items!") {
-                alert(`User "${username}" has no items in their inventory.`);
+            if (inventoryData.message === 'Receiver username is not found!') {
+                showLoadingPopup(`Username "${username}" not found. Please check the spelling and try again.`, true);
+            } else if (inventoryData.message === 'Receiver has no items!') {
+                showLoadingPopup(`User "${username}" has no items in their inventory.`, true);
             } else {
-                alert(`Error: ${inventoryData.message}`);
+                showLoadingPopup(`Error: ${inventoryData.message}`, true);
             }
             return;
         }
 
-        const ownedSkins = inventoryData.result.map(item => item.id);
+        const ownedSkins = Array.isArray(inventoryData.result) ? inventoryData.result.map(item => item.id) : [];
 
-        // Fetch all skins
         const skinsResponse = await fetch(skinsUrl, {
             method: 'POST',
             headers: {
@@ -47,16 +95,25 @@ async function checkInventory() {
             },
             body: `session=ZStTL0pHNVptcEU5cjMyQmJOU0FoOHJ1bEJrdGVGOVN2QnJlVkRzTTI0YUN5QWdCT3J3QWVVdTFNa1hRVDFKdDVoSEg1STlsNVdKTlpndGdpODkyS3NZeHRFa1MwNlA3d25WM21WcC9WWjQ9`
         });
+
+        if (!skinsResponse.ok) {
+            showLoadingPopup('Failed to load skins list. Please try again.', true);
+            return;
+        }
+
         const skinsData = await skinsResponse.json();
 
-        // Display results
+        if (!skinsData || skinsData.success === false || !Array.isArray(skinsData.result)) {
+            showLoadingPopup('Failed to load skins list. Please try again.', true);
+            return;
+        }
+
         displayInventory(skinsData.result, ownedSkins);
+        hideLoadingPopup();
 
     } catch (error) {
         console.error('Error fetching data:', error);
-        alert('An error occurred while fetching inventory data. Please try again.');
-    } finally {
-        loadingPopup.style.display = 'none';
+        showLoadingPopup('An error occurred while fetching inventory data. Please try again.', true);
     }
 }
 
@@ -150,3 +207,6 @@ themeToggle.addEventListener('click', () => {
     const currentTheme = document.documentElement.getAttribute('data-theme');
     setTheme(currentTheme === 'dark' ? 'light' : 'dark');
 });
+
+// Close button for loading popup
+document.getElementById('loadingCloseButton').addEventListener('click', hideLoadingPopup);
