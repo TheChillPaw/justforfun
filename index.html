@@ -12,10 +12,11 @@
         <svg id="moonIcon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-moon" style="display: none;"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
     </button>
     
-    <div id="loadingPopup" class="loading-popup">
-        <div class="loading-content">
-            <div class="spinner"></div>
-            <p>Loading inventory...</p>
+    <div id="loadingPopup" class="loading-popup" aria-hidden="true">
+        <div class="loading-content" role="dialog" aria-live="polite" aria-modal="true">
+            <div class="spinner" id="loadingSpinner"></div>
+            <p id="loadingMessage">Loading inventory...</p>
+            <button id="loadingCloseButton" class="loading-close" type="button" style="display: none;">OK</button>
         </div>
     </div>
     

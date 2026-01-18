@@ -361,3 +361,32 @@ td.status {
     font-size: 18px;
     font-weight: 500;
 }
+
+.loading-content.error .spinner {
+    display: none;
+}
+
+.loading-content.error p {
+    color: #dc3545;
+}
+
+[data-theme="dark"] .loading-content.error p {
+    color: #ff6b6b;
+}
+
+.loading-close {
+    margin-top: 20px;
+    padding: 10px 24px;
+    background-color: var(--button-bg);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: background-color 0.3s;
+}
+
+.loading-close:hover {
+    background-color: var(--button-hover);
+}
