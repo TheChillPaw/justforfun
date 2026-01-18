@@ -183,7 +183,20 @@ h2 {
     background-color: var(--rarity-item-bg);
     border-radius: 6px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    transition: background-color 0.3s;
+    transition: background-color 0.3s, transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+    user-select: none;
+    border: 2px solid transparent;
+}
+
+.rarity-stat-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.rarity-stat-item.active {
+    border-color: var(--button-bg);
+    background-color: var(--table-row-hover);
 }
 
 .rarity-label {
@@ -265,6 +278,16 @@ td.status {
     font-size: 12px;
     font-weight: bold;
     text-transform: uppercase;
+}
+
+.rarity-all {
+    background-color: var(--input-border);
+    color: var(--text-color);
+}
+
+[data-theme="dark"] .rarity-all {
+    background-color: #3a3b3c;
+    color: #e4e6eb;
 }
 
 .rarity-common {
